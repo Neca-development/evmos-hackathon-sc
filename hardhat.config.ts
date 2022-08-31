@@ -29,9 +29,9 @@ const config: HardhatUserConfig = {
   gasReporter: {
     enabled: true,
     // coinmarketcap: 'af8ddfb6-5886-41fe-80b5-19259a3a03be',
-    currency: 'EVMOS',
-    token: "EVMOS",
-    gasPriceApi: "https://eth.bd.evmos.dev:8545",
+    currency: 'USD',
+    
+    gasPrice: 23,
   },
 };
 

@@ -42,13 +42,13 @@ contract DaoEvmos is ERC721{
     EXECUTED
    }
     
-
     struct VoteInfo {
       uint256 positiveVote; 
       uint256 negativeVote;
     }
 
     struct Vote{
+        string voteLink;
         uint votingStart;
         uint votingEnd;
         address ownerVoting;
@@ -93,23 +93,23 @@ contract DaoEvmos is ERC721{
       
       emit Minted(msg.sender, address(this), currentTokenId, _tokenRarity);
 
-
       currentTokenId++;
       
     }
 
-    function createVoting() public {
+    function createVoting(string memory _voteLink) public {
       
       require(votes[currentVoteId].votingStart == 0, "Vote already created");
 
       votes[currentVoteId] = Vote({
+        voteLink: _voteLink,
         votingStart: block.timestamp,
         votingEnd: 0,
         ownerVoting: msg.sender,
         status: VotingStatus.PROCESSING
     });
 
-      emit VoteCreated(currentVoteId, address(this), block.timestamp);
+      emit VoteCreated(currentVoteId, address(this), block.timestamp, _voteLink);
 
       currentVoteId++;
     }
@@ -191,7 +191,19 @@ contract DaoEvmos is ERC721{
 		return string(stringBytes);
 	}
 
-  event VoteCreated(uint256 votingId, address dao, uint256 startTimestamp);
+  function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal virtual override{
+
+        if(to != address(0)){
+          require(rarityForNft[tokenId] != RarityNFT.HIGH, "You can't transfer this token");
+        }
+
+    }
+
+  event VoteCreated(uint256 votingId, address dao, uint256 startTimestamp, string voteLink);
   event VoteClosed(uint256 votingId, address dao, uint256 closeTimestamp);
   event Voted(address user, address dao, uint256 votingId, uint256 voteCount, VoteType voteType);
   event Minted(address user, address dao, uint256 tokenId, RarityNFT rarityNft);
